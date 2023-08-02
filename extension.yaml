@@ -1,0 +1,1568 @@
+name: custom:extension.sql-oracle
+version: 1.41.0
+minDynatraceVersion: "1.269"
+author:
+  name: Dynatrace
+
+metrics:
+  - key: func:com.dynatrace.extension.sql-oracle.memory.pga.usedForWorkAreas
+    query:
+      metricSelector: '(100) * (com.dynatrace.extension.sql-oracle.memory.pga.used) / (com.dynatrace.extension.sql-oracle.memory.pga.allocated)'
+    metadata:
+      displayName: PGA used for work areas
+      description: Indicates what amount of allocated PGA memory is currently consumed by work areas. It can be used to determine how much memory is consumed by other consumers of the PGA memory (for example PL/SQL or Java)
+      unit: Percent
+  - key: func:com.dynatrace.extension.sql-oracle.memory.bufferCacheHitRatio
+    query:
+      metricSelector: '(100) * ((com.dynatrace.extension.sql-oracle.memory.sessionLogicalReads.count) - ((com.dynatrace.extension.sql-oracle.memory.physicalReads.count) - (com.dynatrace.extension.sql-oracle.memory.physicalReadsDirect.count))) / (com.dynatrace.extension.sql-oracle.memory.sessionLogicalReads.count)'
+    metadata:
+      displayName: Buffer cache hit ratio
+      description: Represents the data block buffer cache efficiency, as the rate of the data blocks needed in memory
+      unit: Percent
+  - key: func:com.dynatrace.extension.sql-oracle.memory.sortsInMemory
+    query:
+      metricSelector: '(100) * (com.dynatrace.extension.sql-oracle.memory.memorySorts.count) / ((com.dynatrace.extension.sql-oracle.memory.memorySorts.count) + (com.dynatrace.extension.sql-oracle.memory.diskSorts.count))'
+    metadata:
+      displayName: Sorts in memory ratio
+      description: Sorts (from ORDER BY clauses or index building) done in-memory
+      unit: Percent
+  - key: func:com.dynatrace.extension.sql-oracle.queries.other
+    query:
+      metricSelector: '(com.dynatrace.extension.sql-oracle.queries.dbTime.count) - (com.dynatrace.extension.sql-oracle.queries.plSqlExec.count) - (com.dynatrace.extension.sql-oracle.queries.sqlExec.count) - (com.dynatrace.extension.sql-oracle.queries.sqlParse.count)'
+    metadata:
+      displayName: Time spent on other activities
+      description: Time spent on performing activites other than interpreting PL/SQL, parsing and executing SQL
+      unit: MicroSecond
+  - key: func:com.dynatrace.extension.sql-oracle.tablespaces.usedSpace
+    query:
+      metricSelector: '(com.dynatrace.extension.sql-oracle.tablespaces.totalSpace) - (com.dynatrace.extension.sql-oracle.tablespaces.freeSpace)'
+    metadata:
+      displayName: Used space
+      description: Total amount of space used by tablespace
+      unit: Byte
+  - key: func:com.dynatrace.extension.sql-oracle.tablespaces.usedRatio
+    query:
+      metricSelector: '(100) * ((com.dynatrace.extension.sql-oracle.tablespaces.totalSpace) - (com.dynatrace.extension.sql-oracle.tablespaces.freeSpace)) / (com.dynatrace.extension.sql-oracle.tablespaces.totalSpace)'
+    metadata:
+      displayName: Used space ratio
+      description: Space used in tablespace
+      unit: Percent
+  - key: func:com.dynatrace.extension.sql-oracle.memory.pga.size.targetToLimitRatio
+    query:
+      metricSelector: '(com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateTarget) / (com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateLimit) * (100)'
+    metadata:
+      displayName: Target to limit ratio
+      description: PGA target to limit ratio
+      unit: Percent
+  - key: func:com.dynatrace.extension.sql-oracle.sessions.totalSessionsToLimitRatio
+    query:
+      metricSelector: '(com.dynatrace.extension.sql-oracle.sessions.all) / (com.dynatrace.extension.sql-oracle.limits.sessions) * (100)'
+    metadata:
+      displayName: Sessions to limit ratio
+      description: Total sessions count to limit ratio(initialization parameter)
+      unit: Percent
+  - key: com.dynatrace.extension.sql-oracle.cpu.cores
+    metadata:
+      displayName: CPU cores
+      description: Number of CPU cores
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.cpu.backgroundTotal
+    metadata:
+      displayName: Background CPU usage (per second)
+      description: CPU usage of background processes in centi seconds per second
+      unit: Unspecified
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.cpu.foregroundTotal
+    metadata:
+      displayName: Foreground CPU usage (per second)
+      description: CPU usage of foreground processes in centi seconds per second
+      unit: Unspecified
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.io.bytesRead.count
+    metadata:
+      displayName: Physical read bytes
+      description: Total size in bytes of disk reads by all database instance activity including application reads, backup, recovery, and other utilities
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.io.bytesWritten.count
+    metadata:
+      displayName: Physical byte written
+      description: Total size in bytes of all disk writes for the database instance including application activity, backup, recovery, and other utilities
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.io.wait.count
+    metadata:
+      displayName: Total wait time
+      description: Total time spent in all wait states except for Idle class
+      unit: MilliSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateLimit
+    metadata:
+      displayName: PGA aggregate limit
+      description: Limit on the aggregate PGA memory consumed by the instance
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateTarget
+    metadata:
+      displayName: PGA aggregate target
+      description: Target aggregate PGA memory available to all server processes attached to the instance
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.pga.used
+    metadata:
+      displayName: PGA memory used
+      description: PGA memory consumed by work areas
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.pga.allocated
+    metadata:
+      displayName: Allocated PGA
+      description: Current amount of PGA memory allocated by the instance
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.sga.cacheBuffer.sharedPoolFree
+    metadata:
+      displayName: Shared pool free
+      description: Amount of free system global area (SGA) memory available in shared pool
+      unit: Percent
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoLogSpaceWaitTime.count
+    metadata:
+      displayName: Redo log space wait time
+      description: Total elapsed time of waiting for redo log space request
+      unit: MilliSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoSizeIncrease.count
+    metadata:
+      displayName: Redo size increase
+      description: Total amount of redo generated in bytes
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoWriteTime.count
+    metadata:
+      displayName: Redo write time
+      description: Total elapsed time of the write from the redo log buffer to the current redo log file
+      unit: MilliSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.sessionLogicalReads.count
+    metadata:
+      displayName: Logical reads
+      description: The sum of "db block gets" plus "consistent gets"
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.physicalReads.count
+    metadata:
+      displayName: Physical reads
+      description: Total number of data blocks read from disk
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.physicalReadsDirect.count
+    metadata:
+      displayName: Physical reads direct
+      description: Number of reads directly from disk, bypassing the buffer cache
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.memorySorts.count
+    metadata:
+      displayName: Sorts in memory
+      description: Number of sort operations that were performed completely in memory and did not require any disk writes
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.diskSorts.count
+    metadata:
+      displayName: Sorts on disk
+      description: Number of sort operations that required at least one disk write
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.memory.libraryCacheHitRatio
+    metadata:
+      displayName: Library cache hit ratio
+      description: Library cache hit ratio
+      unit: Percent
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.connectionManagement.count
+    metadata:
+      displayName: Connection management time
+      description: Time spent on performing session connect and disconnect calls
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.plSqlExec.count
+    metadata:
+      displayName: PL SQL exec time
+      description: Time spent on running the PL/SQL interpreter
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.sqlExec.count
+    metadata:
+      displayName: SQL exec time
+      description: Time spent on executing SQL
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.sqlParse.count
+    metadata:
+      displayName: SQL parse time
+      description: Time spent on parsing SQL
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.dbTime.count
+    metadata:
+      displayName: DB Time
+      description: Time spent on performing Database user-level calls
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.queries.cpuTime.count
+    metadata:
+      displayName: DB CPU
+      description: CPU time spent on performing database user-level calls
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.sessions.active
+    metadata:
+      displayName: Active Sessions
+      description: Active sessions count
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.sessions.all
+    metadata:
+      displayName: Total sessions
+      description: Total sessions count
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.sessions.userCalls.count
+    metadata:
+      displayName: User calls
+      description: Total number of logins, parses, or execute calls
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.limits.sessions
+    metadata:
+      displayName: Sessions limit
+      description: Sessions initialization parameter limit
+      unit: Unspecified
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.limits.processes
+    metadata:
+      displayName: Processes limit
+      description: Processes initialization parameter limit
+      unit: Unspecified
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.wait.count
+    metadata:
+      displayName: Number of wait events
+      description: Total number of waits for the event
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.wait.time.count
+    metadata:
+      displayName: Seconds waited
+      description: Total amount of time waited for the event
+      unit: MicroSecond
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.tablespaces.totalSpace
+    metadata:
+      displayName: Total space
+      description: Total size of tablespace
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.tablespaces.freeSpace
+    metadata:
+      displayName: Free space
+      description: Free space in tablespace
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.tablespaces.totalSpaceUsed
+    metadata:
+      displayName: Total space used
+      description: Total space used in tablespace
+      unit: Byte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.tablespaces.usedSpaceRatio
+    metadata:
+      displayName: Used space ratio
+      description: Used space ratio
+      unit: Percent
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_instance
+  - key: com.dynatrace.extension.sql-oracle.asm.free_mb
+    metadata:
+      displayName: ASM - Free space
+      description: Free disk space available on this Oracle ASM Disk
+      unit: MegaByte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+  - key: com.dynatrace.extension.sql-oracle.asm.total_mb
+    metadata:
+      displayName: ASM - Total space
+      description: Total disk space available on this Oracle ASM Disk
+      unit: MegaByte
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+  - key: com.dynatrace.extension.sql-oracle.asm.used_pct
+    metadata:
+      displayName: ASM - Used space
+      description: Percentage of disk space used on this Oracle ASM Disk
+      unit: Percent
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+  - key: com.dynatrace.extension.sql-oracle.asm.reads.count
+    metadata:
+      displayName: ASM - Reads
+      description: Number of reads from this Oracle ASM Disk
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+  - key: com.dynatrace.extension.sql-oracle.asm.writes.count
+    metadata:
+      displayName: ASM - Writes
+      description: Number of writes to this Oracle ASM Disk
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+  - key: com.dynatrace.extension.sql-oracle.multitenancy.resolved
+    metadata:
+      displayName: Resolved CDBs and PDBs
+      description: Count of resolved CDBs and PDBs
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_cdb
+  - key: com.dynatrace.extension.sql-oracle.services.resolved
+    metadata:
+      displayName: Resolved services
+      description: Count of resolved services
+      unit: Count
+      sourceEntityType: sql:com_dynatrace_extension_sql-oracle_service
+
+sqlOracle:
+  - group: Number of CPU cores
+    featureSet: cpu
+    query:
+      SELECT value AS cpu_count
+      FROM v$parameter
+      WHERE name = 'cpu_count'
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.cpu.cores
+        value: col:cpu_count
+        type: gauge
+  - group: CPU usage
+    featureSet: cpu
+    query: >
+      SELECT
+             DECODE(metric_name, 'Background CPU Usage Per Sec',
+                 v$metric.value) AS background_cpu_usage,
+             DECODE(metric_name, 'CPU Usage Per Sec',
+                    v$metric.value) AS foreground_cpu_usage
+      FROM v$metric,
+           v$metricgroup
+      WHERE v$metric.group_id = v$metricgroup.group_id
+        AND v$metric.metric_name IN ('Background CPU Usage Per Sec',
+                                     'CPU Usage Per Sec')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.cpu.backgroundTotal
+        value: col:background_cpu_usage
+        type: gauge
+      - key: com.dynatrace.extension.sql-oracle.cpu.foregroundTotal
+        value: col:foreground_cpu_usage
+        type: gauge
+  - group: Physical read bytes
+    featureSet: io
+    query: >
+      SELECT
+             DECODE(name, 'physical read total bytes', value) AS bytes_written,
+             DECODE(name, 'physical write total bytes', value) AS bytes_read
+      FROM v$sysstat
+      WHERE name IN ('physical read total bytes', 'physical write total bytes')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.io.bytesRead.count
+        value: col:bytes_read
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.io.bytesWritten.count
+        value: col:bytes_written
+        type: count
+  - group: Total wait time
+    featureSet: io
+    query: >
+      SELECT SUM(time_waited) * 10 AS totalWaitTime
+      FROM v$system_wait_class
+      WHERE wait_class <> 'Idle'
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.io.wait.count
+        value: col:totalWaitTime
+        type: count
+  - group: PGA
+    featureSet: memory
+    query: >
+      SELECT
+             DECODE(name, 'pga_aggregate_limit', value) AS pga_aggregate_limit,
+             DECODE(name, 'pga_aggregate_target', value) AS pga_aggregate_target
+      FROM v$parameter
+      WHERE name IN ('pga_aggregate_limit', 'pga_aggregate_target')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateLimit
+        value: col:pga_aggregate_limit
+        type: gauge
+      - key: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateTarget
+        value: col:pga_aggregate_target
+        type: gauge
+  - group: Total PGA in Use
+    featureSet: memory
+    query: >
+      SELECT
+             DECODE(name,'total PGA inuse', value) AS total_pga_in_use,
+             DECODE(name,'total PGA allocated', value) AS total_pga_allocated
+      FROM v$pgastat
+      WHERE name IN ('total PGA inuse', 'total PGA allocated')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.memory.pga.used
+        value: col:total_pga_in_use
+        type: gauge
+      - key: com.dynatrace.extension.sql-oracle.memory.pga.allocated
+        value: col:total_pga_allocated
+        type: gauge
+  - group: Shared Pool Free
+    featureSet: memory
+    query: >
+      SELECT SUM(DECODE(name, 'free memory', bytes)) / SUM(bytes) * 100 AS shared_pool_free FROM v$sgastat WHERE pool = 'shared pool'
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.memory.sga.cacheBuffer.sharedPoolFree
+        value: col:shared_pool_free
+        type: gauge
+  - group: Redo
+    featureSet: memory
+    query: >
+      SELECT
+             DECODE(name, 'redo log space wait time', value) * 10 AS redo_log_space_wait_time,
+             DECODE(name, 'redo size', value)                AS redo_size,
+             DECODE(name, 'redo write time', value) * 10     AS redo_write_time,
+             DECODE(name, 'session logical reads', value)    AS session_logical_reads,
+             DECODE(name, 'physical reads', value)           AS physical_reads,
+             DECODE(name, 'physical reads direct', value)    AS physical_reads_direct,
+             DECODE(name, 'sorts (memory)', value)           AS memory_sorts,
+             DECODE(name, 'sorts (disk)', value)             AS disk_sorts
+      FROM v$sysstat
+      WHERE name IN ('redo log space wait time', 'redo size', 'redo write time',
+                     'session logical reads', 'physical reads', 'physical reads direct',
+                     'sorts (memory)', 'sorts (disk)')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoLogSpaceWaitTime.count
+        value: col:redo_log_space_wait_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoSizeIncrease.count
+        value: col:redo_size
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoWriteTime.count
+        value: col:redo_write_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.sessionLogicalReads.count
+        value: col:session_logical_reads
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.physicalReads.count
+        value: col:physical_reads
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.physicalReadsDirect.count
+        value: col:physical_reads_direct
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.memorySorts.count
+        value: col:memory_sorts
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.memory.diskSorts.count
+        value: col:disk_sorts
+        type: count
+  - group: Library Cache Hit Ratio
+    featureSet: memory
+    query: >
+      SELECT
+            ROUND(1 - SUM(RELOADS) / SUM(PINS), 4) * 100 AS cache_hit_ratio
+      FROM V$LIBRARYCACHE
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.memory.libraryCacheHitRatio
+        value: col:cache_hit_ratio
+        type: gauge
+  - group: Query performance
+    featureSet: queryPerformance
+    query: >
+      SELECT
+             DECODE(stat_name, 'connection management call elapsed time', value) AS conn_management_call_time,
+             DECODE(stat_name, 'PL/SQL execution elapsed time', value)           AS pl_sql_execution_elapsed_time,
+             DECODE(stat_name, 'sql execute elapsed time', value)                AS sql_execute_elapsed_time,
+             DECODE(stat_name, 'parse time elapsed', value)                      AS parse_time_elapsed,
+             DECODE(stat_name, 'DB time', value)                                 AS db_time,
+             DECODE(stat_name, 'DB CPU', value)                                 AS cpu_time
+      FROM v$sys_time_model
+      WHERE stat_name IN ('connection management call elapsed time',
+                          'PL/SQL execution elapsed time', 'sql execute elapsed time',
+                          'parse time elapsed', 'DB time', 'DB CPU')
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.queries.connectionManagement.count
+        value: col:conn_management_call_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.queries.plSqlExec.count
+        value: col:pl_sql_execution_elapsed_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.queries.sqlExec.count
+        value: col:sql_execute_elapsed_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.queries.sqlParse.count
+        value: col:parse_time_elapsed
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.queries.dbTime.count
+        value: col:db_time
+        type: count
+      - key: com.dynatrace.extension.sql-oracle.queries.cpuTime.count
+        value: col:cpu_time
+        type: count
+  - group: Sessions
+    featureSet: sessions
+    query: >
+      SELECT SUM(CASE
+                     WHEN status = 'ACTIVE' AND wait_class <> 'Idle'
+                         THEN 1
+                     ELSE 0 END) AS active_sessions,
+             COUNT(*)            AS all_sessions
+      FROM v$session
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.sessions.active
+        value: col:active_sessions
+        type: gauge
+      - key: com.dynatrace.extension.sql-oracle.sessions.all
+        value: col:all_sessions
+        type: gauge
+  - group: User calls count
+    featureSet: sessions
+    query: >
+      SELECT value AS user_calls FROM v$sysstat WHERE name = 'user calls'
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.sessions.userCalls.count
+        value: col:user_calls
+        type: count
+  - group: topN Queries
+    interval:
+      minutes: 2
+    featureSet: TableSpaceStatsCustomSample 
+    ingest: log
+    query: select a.tablespace_name
+        ,ROUND(a.alloc_size/1024/1024) "Total MB"
+        ,ROUND(a.cur_size/1024/1024) "Current MB"
+        ,ROUND((u.used+a.file_count*65536)/1024/1024) "Used MB"
+        ,ROUND((a.alloc_size-(u.used+a.file_count*65536))/1024/1024) "Free MB"
+        ,ROUND(((u.used+a.file_count*65536)*100)/a.alloc_size) "Used Percentage"
+        ,ROUND((a.alloc_size-u.used)*100/a.alloc_size) "Free Percentage"
+      from dba_tablespaces t
+        ,(select t1.tablespace_name
+        ,nvl(sum(s.bytes),0) used
+        from dba_segments s
+        ,dba_tablespaces t1
+        where t1.tablespace_name=s.tablespace_name(+)
+        group by t1.tablespace_name) u
+          ,(select d.tablespace_name
+          ,sum(greatest(d.bytes,nvl(d.maxbytes,0))) alloc_size
+          ,sum(d.bytes) cur_size
+          ,count(*) file_count
+          from dba_data_files d
+           group by d.tablespace_name) a
+      where t.tablespace_name=u.tablespace_name
+      and t.tablespace_name=a.tablespace_name
+      order by TABLESPACE_NAME desc
+    attributes:
+      - key: extension
+        value: const:sql_oracle
+      - key: event.group
+        value: const:query_performance
+      - key: content
+        value: const:TableSpaceStatsCustomSample
+      - key: Total_MB 
+        value: col:"Total MB"
+      - key: Current_MB
+        value: col:"Current MB"
+      - key: Used_MB 
+        value: col:"Used MB"
+      - key: Free_MB 
+        value: col:"Free MB"
+      - key: Used_Percentage
+        value: col:"Used Percentage"
+      - key: Free_Percentage 
+        value: col:"Free Percentage"
+  - group: GlobalNameCustomSample
+    interval:
+      minutes: 2
+    featureSet: GlobalNameCustomSample 
+    ingest: log
+    query: select * from global_name 
+    attributes:
+      - key: extension
+        value: const:sql_oracle
+      - key: event.group 
+        value: const:query_performance 
+      - key: content
+        value: const:GlobalNameCustomSample
+      - key: DB_Global_Name 
+        value: col:"GLOBAL_NAME"
+  - group: DBSessionCountSample 
+    interval:
+      minutes: 2
+    featureSet: DBSessionCountSample 
+    ingest: log
+    query: select inst_id, count(*) from gv$session group by inst_id 
+    attributes:
+      - key: extension
+        value: const:sql_oracle
+      - key: event.group
+        value: const:query_performance
+      - key: content
+        value: const:DBSessionCountSample
+      - key: session_instance_id 
+        value: col:INST_ID
+      - key: instance_count
+        value: col:COUNT(*)
+  - group: DBTablespaceStatusCustomSample 
+    interval:
+      minutes: 2
+    featureSet: DBTablespaceStatusCustomSample 
+    ingest: log
+    query: select TABLESPACE_NAME,status from dba_tablespaces 
+    attributes:
+      - key: extension
+        value: const:sql_oracle
+      - key: event.group
+        value: const:query_performance
+      - key: content
+        value: const:DBTablespaceStatusCustomSample
+      - key: tablespace_name 
+        value: col:TABLESPACE_NAME
+      - key: status
+        value: col:STATUS
+  - group: DBServicesSessionCount
+    interval:
+      minutes: 2
+    featureSet: DBServicesSessionCountSample 
+    ingest: log
+    query: select inst_id, service_name, count(*) from gv$session group by inst_id, service_name order by 2,1
+    attributes:
+      - key: extension
+        value: const:sql_oracle
+      - key: event.group
+        value: const:query_performance
+      - key: content
+        value: const:DBServicesSessionCountSample
+      - key: instance_id 
+        value: col:INST_ID
+      - key: service_name 
+        value: col:SERVICE_NAME
+      - key: connection_count 
+        value: col:COUNT(*)
+  - group: Multitenancy
+    featureSet: multitenancy
+    query: >
+      SELECT CASE
+                 WHEN
+                         (SELECT SYS_CONTEXT('userenv', 'con_id')
+                          FROM dual) < 2 THEN NULL
+                 ELSE pdb.global_name
+                 END  AS pdb,
+             cdb.NAME AS cdb
+      FROM global_name pdb
+               CROSS JOIN V$DATABASE cdb
+    metrics:
+      - key: com.dynatrace.extension.sql-oracle.multitenancy.resolved
+        value: const:1
+        type: gauge
+    dimensions:
+      - key: pdb
+        value: col:pdb
+      - key: cdb
+        value: col:cdb
+    subgroups:
+      - subgroup: Resolving service
+        query: |
+          SELECT service_id, name FROM v$services
+        metrics:
+          - key: com.dynatrace.extension.sql-oracle.services.resolved
+            value: col:service_id
+            type: gauge
+        dimensions:
+          - key: servicename
+            value: col:name
+
+topology:
+  types:
+    - name: sql:com_dynatrace_extension_sql-oracle_host
+      displayName: Oracle DB host
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_{device.address}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: '{device.address}'
+              key: dt.ip_addresses
+              displayName: IP Addresses
+            - pattern: '{device.name}'
+              key: dt.dns_names
+              displayName: DNS names
+          requiredDimensions: []
+          instanceNamePattern: Oracle DB server on {device.address}
+        - idPattern: sql_sql-oracle_{device.address}
+          sources:
+            - sourceType: Logs
+          attributes:
+            - pattern: '{device.address}'
+              key: dt.ip_addresses
+              displayName: IP Addresses
+            - pattern: '{device.name}'
+              key: dt.dns_names
+              displayName: DNS names
+          requiredDimensions:
+            - key: "extension"
+              valuePattern: "$eq(sql_oracle)"
+          instanceNamePattern: Oracle DB server on {device.address}
+    - name: sql:com_dynatrace_extension_sql-oracle_instance
+      displayName: Oracle DB
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_{device.address}_{device}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+          requiredDimensions: []
+          instanceNamePattern: 'Oracle DB: {device} on {device.address}'
+          iconPattern: oracle
+        - idPattern: sql_sql-oracle_{device.address}_{device}
+          sources:
+            - sourceType: Logs
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+          requiredDimensions:
+            - key: "extension"
+              valuePattern: "$eq(sql_oracle)"
+          instanceNamePattern: 'Oracle DB: {device} on {device.address}'
+          iconPattern: oracle
+        - idPattern: sql_sql-oracle_{device}_{device}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+          requiredDimensions: []
+          instanceNamePattern: 'Oracle DB: {device}'
+          iconPattern: oracle
+        - idPattern: sql_sql-oracle_{device}_{device}
+          sources:
+            - sourceType: Logs
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+          requiredDimensions:
+            - key: "extension"
+              valuePattern: "$eq(sql_oracle)"
+          instanceNamePattern: 'Oracle DB: {device}'
+          iconPattern: oracle
+    - name: sql:com_dynatrace_extension_sql-oracle_asm_disk
+      displayName: Oracle ASM Disk
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_asm_disk_{device.address}_{device}_{name}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle.asm.)
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.address}'
+              key: dt.ip_addresses
+              displayName: IP Addresses
+            - pattern: '{device.name}'
+              key: dt.dns_names
+              displayName: DNS names
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+            - pattern: '{name}'
+              key: disk_name
+          requiredDimensions: []
+          instanceNamePattern: 'Oracle ASM Disk: {name} on {device.address}'
+          iconPattern: hdd-discdrive
+        - idPattern: sql_sql-oracle_asm_disk_{device.address}_{device}_{name}
+          sources:
+            - sourceType: Logs
+          attributes:
+            - pattern: '{device}'
+              key: device
+            - pattern: '{device.address}'
+              key: dt.ip_addresses
+              displayName: IP Addresses
+            - pattern: '{device.name}'
+              key: dt.dns_names
+              displayName: DNS names
+            - pattern: '{device.port}'
+              key: dt.listen_ports
+              displayName: Port
+            - pattern: '{name}'
+              key: disk_name
+          requiredDimensions:
+            - key: "extension"
+              valuePattern: "$eq(sql_oracle)"
+          instanceNamePattern: 'Oracle ASM Disk: {name} on {device.address}'
+          iconPattern: hdd-discdrive
+    - name: sql:com_dynatrace_extension_sql-oracle_cdb
+      displayName: CDB
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_{device.address}_{device.port}_{cdb}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: cdb
+              key: cdb
+              displayName: CDB name
+          requiredDimensions: []
+          instanceNamePattern: "CDB: {cdb} on {device.address}:{device.port}"
+          iconPattern: oracle
+    - name: sql:com_dynatrace_extension_sql-oracle_pdb
+      displayName: PDB
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_{device.address}_{device.port}_{pdb}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: "{pdb}"
+              key: pdb
+              displayName: PDB name
+            - pattern: "{cdb}"
+              key: cdb
+              displayName: CDB name
+          requiredDimensions: []
+          instanceNamePattern: "PDB: {pdb} on {cdb} on {device.address}:{device.port}"
+          iconPattern: oracle
+    - name: sql:com_dynatrace_extension_sql-oracle_service
+      displayName: Service
+      enabled: true
+      rules:
+        - idPattern: sql_sql-oracle_{device.address}_{device.port}_{servicename}
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(com.dynatrace.extension.sql-oracle)
+          attributes:
+            - pattern: "{pdb}"
+              key: pdb
+              displayName: PDB name
+            - pattern: "{cdb}"
+              key: cdb
+              displayName: CDB name
+            - pattern: "{servicename}"
+              key: servicename
+              displayName: Service name
+          requiredDimensions: []
+          instanceNamePattern: "Service: {servicename} on {pdb} on {device.address}:{device.port}"
+          iconPattern: oracle
+  relationships:
+    - typeOfRelation: RUNS_ON
+      fromType: sql:com_dynatrace_extension_sql-oracle_instance
+      toType: sql:com_dynatrace_extension_sql-oracle_host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: RUNS_ON
+      fromType: sql:com_dynatrace_extension_sql-oracle_host
+      toType: host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: RUNS_ON
+      fromType: sql:com_dynatrace_extension_sql-oracle_instance
+      toType: sql:com_dynatrace_extension_sql-oracle_host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: CHILD_OF
+      fromType: sql:com_dynatrace_extension_sql-oracle_asm_disk
+      toType: sql:com_dynatrace_extension_sql-oracle_host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle.asm.)
+        - sourceType: Logs
+    - typeOfRelation: SAME_AS
+      fromType: sql:com_dynatrace_extension_sql-oracle_pdb
+      toType: sql:com_dynatrace_extension_sql-oracle_instance
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: SAME_AS
+      fromType: sql:com_dynatrace_extension_sql-oracle_service
+      toType: sql:com_dynatrace_extension_sql-oracle_instance
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: RUNS_ON
+      fromType: sql:com_dynatrace_extension_sql-oracle_cdb
+      toType: sql:com_dynatrace_extension_sql-oracle_host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: RUNS_ON
+      fromType: sql:com_dynatrace_extension_sql-oracle_pdb
+      toType: sql:com_dynatrace_extension_sql-oracle_cdb
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: SAME_AS
+      fromType: sql:com_dynatrace_extension_sql-oracle_service
+      toType: sql:com_dynatrace_extension_sql-oracle_pdb
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+    - typeOfRelation: SAME_AS
+      fromType: sql:com_dynatrace_extension_sql-oracle_service
+      toType: sql:com_dynatrace_extension_sql-oracle_instance
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(com.dynatrace.extension.sql-oracle)
+        - sourceType: Logs
+
+screens:
+  - entityType: sql:com_dynatrace_extension_sql-oracle_host
+    propertiesCard:
+      properties:
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: type(host), toRelationships.runsOn($(entityConditions))
+            displayName: Host
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+        showGlobalFilter: true
+        showAddTag: true
+      layout:
+        autoGenerate: false
+        cards:
+          - type: "ENTITIES_LIST"
+            key: "instance"
+          - type: "ENTITIES_LIST"
+            key: "cdb"
+          - type: "CHART_GROUP"
+            key: "instance_cpu"
+          - type: "CHART_GROUP"
+            key: "instance_memory"
+          - type: "CHART_GROUP"
+            key: "instance_query_performance"
+          - type: "CHART_GROUP"
+            key: "instance_io"
+          - type: "CHART_GROUP"
+            key: "instance_sessions"
+          - type: "CHART_GROUP"
+            key: "instance_tablespace"
+          - type: LOGS
+            key: default
+            width: FULL_SIZE
+            conditions: []
+    logsCards:
+      - displayName: "Long running queries"
+        enablePaging: true
+        filterQuery: dt.source_entity inEntitySelector "$(entityConditions)"
+        key: default
+        pageSize: 10
+        showFiltering: true
+        displayChart : false
+    entitiesListCards:
+      - key: "instance"
+        displayName: "Instances"
+        entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_instance), fromRelationships.runsOn($(entityConditions))"
+        pageSize: 5
+        displayCharts: false
+        displayIcons: true
+        enableDetailsExpandability: true
+        numberOfVisibleCharts: 1
+        hideEmptyCharts: true
+      - key: "cdb"
+        displayName: CDBs
+        entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_cdb), fromRelationships.runsOn($(entityConditions))"
+        pageSize: 5
+        displayCharts: false
+        displayIcons: true
+        enableDetailsExpandability: true
+        numberOfVisibleCharts: 1
+        hideEmptyCharts: true
+        emptyState: {
+          header: "No CDBs detected.",
+          body: "Multitenancy feature set must be enabled in the extension to retrieve CDB data."
+        }
+    chartsCards:
+      - key: "instance_cpu"
+        displayName: "CPU Usage"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Background CPU usage (per second)"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.backgroundTotal:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Foreground CPU usage (per second)"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.foregroundTotal:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Number of CPU cores"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.cores:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_memory"
+        displayName: "Memory Usage"
+        numberOfVisibleCharts: 4
+        mode : "NORMAL"
+        charts:
+          - displayName: "Target to Limit Ratio"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.pga.size.targetToLimitRatio:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "PGA used for work areas"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.pga.usedForWorkAreas:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Buffer cache hit ratio"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.bufferCacheHitRatio:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Sorts in memory"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.sortsInMemory:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "PGA aggregate limit"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateLimit:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PGA aggregate target"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateTarget:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Allocated PGA"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.allocated:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PGA memory in use"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.used:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Shared pool free"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.cacheBuffer.sharedPoolFree:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo log space wait time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoLogSpaceWaitTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo size increase"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoSizeIncrease.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo write time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoWriteTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_query_performance"
+        displayName: "Query performance monitoring"
+        numberOfVisibleCharts: 4
+        mode : "NORMAL"
+        charts:
+          - displayName: "Connection management time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.connectionManagement.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PL SQL exec time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.plSqlExec.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "SQL exec time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.sqlExec.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "SQL parse time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.sqlParse.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Time spent on other activities"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.queries.other:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "DB Time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.dbTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "DB CPU"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.cpuTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_io"
+        displayName: "I/O"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Physical read bytes"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.bytesRead.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Physical bytes written"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.bytesWritten.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Total wait time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.wait.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_sessions"
+        displayName: "Sessions"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Sessions"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.sessions.all:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Active Sessions"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.sessions.active:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_tablespace"
+        displayName: "Tablespaces"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Total space"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.tablespaces.totalSpace:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Free space"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.tablespaces.freeSpace:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_host"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+  - entityType: sql:com_dynatrace_extension_sql-oracle_instance
+    listSettings:
+      staticContent:
+        showGlobalFilter: true
+        header:
+          title: "Oracle DB instances"
+          description: "Overview of Oracle DB instances"
+          icon: oracle
+      layout:
+        autoGenerate: true
+    propertiesCard:
+      properties:
+        - type : RELATION
+          relation :
+            entitySelectorTemplate : type(host), toRelationships.runsOn($(entityConditions))
+            displayName : Host
+        - type : RELATION
+          relation :
+            entitySelectorTemplate : type(sql:com_dynatrace_extension_sql-oracle_pdb), fromRelationships.isSameAs($(entityConditions))
+            displayName : PDB
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+        showGlobalFilter: true
+        showAddTag: true
+      layout:
+        autoGenerate: false
+        cards:
+          - type: "ENTITIES_LIST"
+            key: "instance_services"
+          - type: "CHART_GROUP"
+            key: "instance_cpu"
+          - type: "CHART_GROUP"
+            key: "instance_memory"
+          - type: "CHART_GROUP"
+            key: "instance_query_performance"
+          - type: "CHART_GROUP"
+            key: "instance_io"
+          - type: "CHART_GROUP"
+            key: "instance_sessions"
+          - type: "CHART_GROUP"
+            key: "instance_tablespace"
+          - type: LOGS
+            key: default
+            width: FULL_SIZE
+            conditions: []
+    entitiesListCards:
+      - key: "instance_services"
+        displayName: "Services"
+        entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_service), fromRelationships.isSameAs($(entityConditions))"
+        pageSize: 5
+        displayCharts: false
+        displayIcons: true
+        enableDetailsExpandability: true
+        numberOfVisibleCharts: 1
+        hideEmptyCharts: true
+
+    logsCards:
+      - displayName: "Long running queries"
+        enablePaging: true
+        filterQuery: dt.source_entity inEntitySelector "$(entityConditions)"
+        key: default
+        pageSize: 10
+        showFiltering: true
+        displayChart : false
+    chartsCards:
+      - key: "instance_cpu"
+        displayName: "CPU Usage"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Background CPU usage (per second)"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.backgroundTotal:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Foreground CPU usage (per second)"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.foregroundTotal:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Number of CPU cores"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.cpu.cores:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+      - key: "instance_memory"
+        displayName: "Memory Usage"
+        numberOfVisibleCharts: 4
+        mode : "NORMAL"
+        charts:
+          - displayName: "Target to Limit Ratio"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.pga.size.targetToLimitRatio:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "PGA used for work areas"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.pga.usedForWorkAreas:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Buffer cache hit"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.bufferCacheHitRatio:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Sorts in memory"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.memory.sortsInMemory:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "PGA aggregate limit"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateLimit:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PGA aggregate target"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.size.pgaAggregateTarget:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Allocated PGA"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.allocated:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PGA memory in use"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.pga.used:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Shared pool free"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.cacheBuffer.sharedPoolFree:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo log space wait time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoLogSpaceWaitTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo size increase"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoSizeIncrease.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Redo write time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.memory.sga.redoBuffer.redoWriteTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_query_performance"
+        displayName: "Query performance"
+        numberOfVisibleCharts: 4
+        mode : "NORMAL"
+        charts:
+          - displayName: "Connection management time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.connectionManagement.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "PL SQL exec time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.plSqlExec.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "SQL exec time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.sqlExec.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "SQL parse time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.sqlParse.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Time spent on other activities"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: func:com.dynatrace.extension.sql-oracle.queries.other:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "DB Time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.dbTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "DB CPU"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.queries.cpuTime.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_io"
+        displayName: "I/O"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Physical read bytes"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.bytesRead.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Physical bytes written"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.bytesWritten.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Total wait time"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.io.wait.count:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_sessions"
+        displayName: "Sessions"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Sessions"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.sessions.all:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+          - displayName: "Active Sessions"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.sessions.active:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+      - key: "instance_tablespace"
+        displayName: "Tablespaces"
+        numberOfVisibleCharts: 2
+        mode : "NORMAL"
+        charts:
+          - displayName: "Total space"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.tablespaces.totalSpace:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+          - displayName: "Free space"
+            visualizationType: GRAPH_CHART
+            graphChartConfig:
+              metrics:
+                - metricSelector: com.dynatrace.extension.sql-oracle.tablespaces.freeSpace:splitBy("dt.entity.sql:com_dynatrace_extension_sql-oracle_instance"):avg:auto:sort(value(sum,descending)):limit(10)
+              connectGaps: true
+  - entityType: sql:com_dynatrace_extension_sql-oracle_pdb
+    listSettings:
+      staticContent:
+        showGlobalFilter: true
+        header:
+          title: Multitenancy
+          description: Overview of Multitenancy
+          icon: oracle
+      layout:
+        autoGenerate: true
+    propertiesCard:
+      properties:
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: type(sql:com_dynatrace_extension_sql-oracle_instance), toRelationships.isSameAs($(entityConditions))
+            displayName: Instance
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: type(sql:com_dynatrace_extension_sql-oracle_cdb), toRelationships.runsOn($(entityConditions))
+            displayName: CDB
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+        showGlobalFilter: true
+        showAddTag: true
+      layout:
+        autoGenerate: false
+        cards:
+          - type: "ENTITIES_LIST"
+            key: "services"
+    entitiesListCards:
+      - key: "services"
+        displayName: "Services"
+        entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_service), fromRelationships.isSameAs($(entityConditions))"
+        pageSize: 5
+        displayCharts: false
+        displayIcons: true
+        enableDetailsExpandability: true
+        numberOfVisibleCharts: 1
+        hideEmptyCharts: true
+        emptyState: {
+          header: "No services detected.",
+          body: "Multitenancy feature set must be enabled in the extension to retrieve service data."
+        }
+  - entityType: sql:com_dynatrace_extension_sql-oracle_service
+    listSettings:
+      staticContent:
+        showGlobalFilter: true
+        header:
+          title: Oracle DB service
+          description: Overview of Oracle DB service
+          icon: oracle
+      layout:
+        autoGenerate: true
+    propertiesCard:
+      properties:
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: type(sql:com_dynatrace_extension_sql-oracle_instance), toRelationships.isSameAs($(entityConditions))
+            displayName: Instance
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: type(sql:com_dynatrace_extension_sql-oracle_pdb), toRelationships.isSameAs($(entityConditions))
+            displayName: PDB
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+        showGlobalFilter: true
+        showAddTag: true
+      layout:
+        autoGenerate: false
+  - entityType: sql:com_dynatrace_extension_sql-oracle_cdb
+    propertiesCard:
+      properties:
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_pdb), fromRelationships.runsOn($(entityConditions))"
+            displayName: PDB
+        - type: RELATION
+          relation:
+            entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_host), toRelationships.runsOn($(entityConditions))"
+            displayName: Host
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+        showGlobalFilter: true
+        showAddTag: true
+      layout:
+        autoGenerate: false
+        cards:
+          - type: "ENTITIES_LIST"
+            key: "pdbs"
+    entitiesListCards:
+      - key: "pdbs"
+        displayName: "Pluggable databases"
+        entitySelectorTemplate: "type(sql:com_dynatrace_extension_sql-oracle_pdb), fromRelationships.runsOn($(entityConditions))"
+        pageSize: 5
+        displayCharts: false
+        displayIcons: true
+        enableDetailsExpandability: true
+        numberOfVisibleCharts: 1
+        hideEmptyCharts: true
+        emptyState: {
+          header: "No PDBs detected.",
+          body: "Multitenancy feature set must be enabled in the extension to retrieve PDB data."
+        }
