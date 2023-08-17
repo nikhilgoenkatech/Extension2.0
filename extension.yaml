@@ -1,5 +1,5 @@
 name: custom:extension.sql-oracle
-version: 1.41.0
+version: 1.42.11
 minDynatraceVersion: "1.269"
 author:
   name: Dynatrace
@@ -528,53 +528,29 @@ sqlOracle:
       - key: com.dynatrace.extension.sql-oracle.sessions.userCalls.count
         value: col:user_calls
         type: count
-  - group: topN Queries
+  - group: Payment Queries
     interval:
-      minutes: 2
-    featureSet: TableSpaceStatsCustomSample 
+      minutes: 10
+    featureSet: topN 
     ingest: log
-    query: select a.tablespace_name
-        ,ROUND(a.alloc_size/1024/1024) "Total MB"
-        ,ROUND(a.cur_size/1024/1024) "Current MB"
-        ,ROUND((u.used+a.file_count*65536)/1024/1024) "Used MB"
-        ,ROUND((a.alloc_size-(u.used+a.file_count*65536))/1024/1024) "Free MB"
-        ,ROUND(((u.used+a.file_count*65536)*100)/a.alloc_size) "Used Percentage"
-        ,ROUND((a.alloc_size-u.used)*100/a.alloc_size) "Free Percentage"
-      from dba_tablespaces t
-        ,(select t1.tablespace_name
-        ,nvl(sum(s.bytes),0) used
-        from dba_segments s
-        ,dba_tablespaces t1
-        where t1.tablespace_name=s.tablespace_name(+)
-        group by t1.tablespace_name) u
-          ,(select d.tablespace_name
-          ,sum(greatest(d.bytes,nvl(d.maxbytes,0))) alloc_size
-          ,sum(d.bytes) cur_size
-          ,count(*) file_count
-          from dba_data_files d
-           group by d.tablespace_name) a
-      where t.tablespace_name=u.tablespace_name
-      and t.tablespace_name=a.tablespace_name
-      order by TABLESPACE_NAME desc
+    query: select account_number, amount, transaction_type, reference_number, description, transaction_status,transaction_start_time, transaction_end_time from payment WHERE transaction_start_time >= SYSTIMESTAMP - INTERVAL '10' MINUTES 
     attributes:
       - key: extension
         value: const:sql_oracle
       - key: event.group
         value: const:query_performance
       - key: content
-        value: const:TableSpaceStatsCustomSample
-      - key: Total_MB 
-        value: col:"Total MB"
-      - key: Current_MB
-        value: col:"Current MB"
-      - key: Used_MB 
-        value: col:"Used MB"
-      - key: Free_MB 
-        value: col:"Free MB"
-      - key: Used_Percentage
-        value: col:"Used Percentage"
-      - key: Free_Percentage 
-        value: col:"Free Percentage"
+        value: const:PaymentData
+      - key: account_number 
+        value: col:ACCOUNT_NUMBER
+      - key: amount 
+        value: col:AMOUNT
+      - key: transaction_type 
+        value: col:TRANSACTION_TYPE
+      - key: reference_number 
+        value: col:REFERENCE_NUMBER
+      - key: transaction_status
+        value: col:TRANSACTION_STATUS
   - group: GlobalNameCustomSample
     interval:
       minutes: 2
