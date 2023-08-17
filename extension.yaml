@@ -528,7 +528,7 @@ sqlOracle:
       - key: com.dynatrace.extension.sql-oracle.sessions.userCalls.count
         value: col:user_calls
         type: count
-  - group: Payment Queries
+  - group: topN 
     interval:
       minutes: 10
     featureSet: topN 
